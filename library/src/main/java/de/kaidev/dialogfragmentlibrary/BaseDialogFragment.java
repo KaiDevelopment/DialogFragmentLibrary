@@ -250,4 +250,3 @@ public abstract class BaseDialogFragment extends DialogFragment {
         void onDismiss(String tag, AlertDialog dialog, Bundle args);
     }
 }
-//test
