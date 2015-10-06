@@ -64,7 +64,7 @@ public class BuilderDialogFragment extends BaseDialogFragment implements View.On
 
     @Override
     public void onClick(View v) {
-        dismiss();
+        dismissAllowingStateLoss();
         if (buttonListener != null)
             buttonListener.onButtonClick(getTagFromArguments(), getButtonType(v), getDialog(), getArguments().getBundle("data"));
     }
