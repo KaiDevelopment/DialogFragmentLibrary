@@ -27,7 +27,7 @@ public abstract class BaseDialogFragment extends DialogFragment {
     private CancelListener cancelListener;
     private DismissListener dismissListener;
 
-    AlertDialog dialog;
+    Dialog dialog;
 
     boolean positive = true;
     boolean neutral = true;
@@ -43,19 +43,13 @@ public abstract class BaseDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         System.out.println("BaseDialogFragment.onCreateDialog");
-        Builder builder = getBuilder();
-        dialog = builder.create();
+        dialog = createDialog();
         dialog.setOnShowListener(dialog1 -> {
             registerListener((AlertDialog) dialog1);
             ((AlertDialog) dialog1).getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(positive);
             ((AlertDialog) dialog1).getButton(DialogInterface.BUTTON_NEUTRAL).setEnabled(neutral);
             ((AlertDialog) dialog1).getButton(DialogInterface.BUTTON_NEGATIVE).setEnabled(negative);
         });
-        return dialog;
-    }
-
-    @Override
-    public AlertDialog getDialog() {
         return dialog;
     }
 
@@ -68,28 +62,6 @@ public abstract class BaseDialogFragment extends DialogFragment {
     public void registerListener(AlertDialog dialog) {
         dialog.setOnDismissListener(this);
         dialog.setOnCancelListener(this);
-    }
-
-    public void setButtonEnabled(int which, boolean enabled){
-        AlertDialog dialog = getDialog();
-        if (dialog != null){
-            Button button = dialog.getButton(which);
-            if (button != null){
-                button.setEnabled(enabled);
-                return;
-            }
-        }
-        switch (which){
-            case DialogInterface.BUTTON_POSITIVE:
-                positive = enabled;
-                break;
-            case DialogInterface.BUTTON_NEUTRAL:
-                neutral = enabled;
-                break;
-            case DialogInterface.BUTTON_NEGATIVE:
-                negative = enabled;
-                break;
-        }
     }
 
     @Override
@@ -122,131 +94,13 @@ public abstract class BaseDialogFragment extends DialogFragment {
             cancelListener.onCancel(getTagFromArguments(), getDialog(), getArguments().getBundle("data"));
     }
 
-    public abstract Builder getBuilder();
-
-    static public class Builder extends AlertDialog.Builder implements Serializable{
-        public Builder(Context context) {
-            super(context);
-        }
-
-        public Builder(Context context, int theme) {
-            super(context, theme);
-        }
-
-        @Override
-        @Deprecated
-        public Builder setNegativeButton(CharSequence text, DialogInterface.OnClickListener listener) {
-            super.setNegativeButton(text, null);
-            return this;
-        }
-
-        public Builder setNegativeButton(CharSequence text) {
-            super.setNegativeButton(text, null);
-            return this;
-        }
-
-        @Deprecated
-        @Override
-        public Builder setNeutralButton(CharSequence text, DialogInterface.OnClickListener listener) {
-            super.setNeutralButton(text, null);
-            return this;
-        }
-
-        public Builder setNeutralButton(CharSequence text) {
-            super.setNeutralButton(text, null);
-            return this;
-        }
-
-        @Deprecated
-        @Override
-        public Builder setPositiveButton(CharSequence text, DialogInterface.OnClickListener listener) {
-            super.setPositiveButton(text, null);
-            return this;
-        }
-
-        public Builder setPositiveButton(CharSequence text) {
-            super.setPositiveButton(text, null);
-            return this;
-        }
-
-        @Override
-        public Builder setTitle(CharSequence title) {
-            super.setTitle(title);
-            return this;
-        }
-
-        @Override
-        public Builder setMessage(CharSequence message) {
-            super.setMessage(message);
-            return this;
-        }
-
-        @Deprecated
-        @Override
-        public Builder setOnCancelListener(DialogInterface.OnCancelListener onCancelListener) {
-            return this;
-        }
-
-        @Deprecated
-        @Override
-        public Builder setOnDismissListener(DialogInterface.OnDismissListener onDismissListener) {
-            return this;
-        }
-
-        @Deprecated
-        @Override
-        public Builder setOnItemSelectedListener(AdapterView.OnItemSelectedListener listener) {
-            return this;
-        }
-
-        @Override
-        public Builder setItems(CharSequence[] items, DialogInterface.OnClickListener listener) {
-            super.setItems(items, null);
-            return this;
-        }
-
-        @Override
-        public Builder setItems(int itemsId, DialogInterface.OnClickListener listener) {
-            super.setItems(itemsId, null);
-            return this;
-        }
-
-        @Override
-        public Builder setMultiChoiceItems(CharSequence[] items, boolean[] checkedItems, DialogInterface.OnMultiChoiceClickListener listener) {
-            super.setMultiChoiceItems(items, checkedItems, null);
-            return this;
-        }
-
-        @Override
-        public Builder setSingleChoiceItems(CharSequence[] items, int checkedItem, DialogInterface.OnClickListener listener) {
-            super.setSingleChoiceItems(items, checkedItem, listener);
-            return this;
-        }
-
-        @Override
-        public Builder setCancelable(boolean cancelable) {
-            super.setCancelable(cancelable);
-            return this;
-        }
-
-        @Override
-        public Builder setView(View view) {
-            super.setView(view);
-            return this;
-        }
-
-        @Override
-        public Builder setView(int layoutResId) {
-            super.setView(layoutResId);
-            return this;
-        }
-    }
+    public abstract Dialog createDialog();
 
     public interface CancelListener{
-        void onCancel(String tag, AlertDialog dialog, Bundle args);
+        void onCancel(String tag, Dialog dialog, Bundle args);
     }
 
     public interface DismissListener{
-        void onDismiss(String tag, AlertDialog dialog, Bundle args);
+        void onDismiss(String tag, Dialog dialog, Bundle args);
     }
 }
