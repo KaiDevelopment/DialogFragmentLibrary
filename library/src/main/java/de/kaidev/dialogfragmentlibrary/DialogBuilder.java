@@ -1,9 +1,6 @@
 package de.kaidev.dialogfragmentlibrary;
 
-import android.app.Dialog;
 import android.content.Context;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.annotation.ArrayRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.IdRes;
@@ -13,41 +10,9 @@ import android.support.v7.app.AlertDialog;
 /**
  * Created by Kai on 07.10.2015.
  */
-public class DialogBuilder implements Parcelable {
-    protected DialogBuilder(Parcel in) {
-    }
+public class DialogBuilder{
 
-    public DialogBuilder(){}
-
-    public DialogBuilder(Context c){
-        context = c;
-    }
-
-    public static final Creator<DialogBuilder> CREATOR = new Creator<DialogBuilder>() {
-        @Override
-        public DialogBuilder createFromParcel(Parcel in) {
-            return new DialogBuilder(in);
-        }
-
-        @Override
-        public DialogBuilder[] newArray(int size) {
-            return new DialogBuilder[size];
-        }
-    };
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-
-    }
-
-    Context context;
-
-    public Dialog build(Context context){
+    public AlertDialog build(Context context){
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
         if (title != null) builder.setTitle(title);

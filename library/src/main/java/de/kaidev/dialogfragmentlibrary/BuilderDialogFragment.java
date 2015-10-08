@@ -9,24 +9,26 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import org.parceler.Parcels;
+
 /**
  * Created by Kai on 05.07.2015.
  */
-public class BuilderDialogFragment extends BaseDialogFragment implements View.OnClickListener, AdapterView.OnItemClickListener {
+public class BuilderDialogFragment extends AlertDialogFragment implements View.OnClickListener, AdapterView.OnItemClickListener {
 
-    static public BuilderDialogFragment createDialog(Builder builder){
+    static public BuilderDialogFragment createDialog(DialogBuilder builder){
         Bundle args = new Bundle();
-        args.putSerializable(BUILDER, builder);
+        args.putParcelable(BUILDER, Parcels.wrap(builder));
 
         BuilderDialogFragment dialog = new BuilderDialogFragment();
         dialog.setArguments(args);
         return dialog;
     }
 
-    static public BuilderDialogFragment createDialog(Builder builder, Bundle data){
+    static public BuilderDialogFragment createDialog(DialogBuilder builder, Bundle data){
         Bundle args = new Bundle();
         args.putBundle("data", data);
-        args.putSerializable(BUILDER, builder);
+        args.putParcelable(BUILDER, Parcels.wrap(builder));
 
         BuilderDialogFragment dialog = new BuilderDialogFragment();
         dialog.setArguments(args);
@@ -58,8 +60,8 @@ public class BuilderDialogFragment extends BaseDialogFragment implements View.On
     }
 
     @Override
-    public Builder getBuilder() {
-        return (Builder) getArguments().getSerializable("builder");
+    public AlertDialog createDialog() {
+        return ((DialogBuilder) getArguments().getParcelable("builder")).build(getContext());
     }
 
     @Override
