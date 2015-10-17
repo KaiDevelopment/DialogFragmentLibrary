@@ -10,8 +10,6 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import org.parceler.Parcels;
-
 /**
  * Created by Kai on 05.07.2015.
  */

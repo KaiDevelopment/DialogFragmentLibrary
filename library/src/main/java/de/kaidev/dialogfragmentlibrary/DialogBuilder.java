@@ -1,29 +1,15 @@
 package de.kaidev.dialogfragmentlibrary;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.ArrayRes;
 import android.support.annotation.DrawableRes;
-import android.support.annotation.IdRes;
-import android.support.annotation.IntDef;
-import android.support.annotation.IntRange;
-import android.support.annotation.IntegerRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.StringRes;
 import android.support.v7.app.AlertDialog;
-import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import org.apache.commons.io.Charsets;
-
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 
 /**
  * Created by Kai on 07.10.2015.
@@ -44,6 +30,7 @@ public class DialogBuilder implements Parcelable{
         titleId = in.readInt();
         message = in.readString();
         messageId = in.readInt();
+        linkify = in.readInt();
         viewId = in.readInt();
         cancelable = in.readByte() != 0;
         itemsId = in.readInt();
@@ -66,6 +53,7 @@ public class DialogBuilder implements Parcelable{
         dest.writeInt(titleId);
         dest.writeString(message);
         dest.writeInt(messageId);
+        dest.writeInt(linkify);
         dest.writeInt(viewId);
         dest.writeByte((byte) (cancelable ? 1 : 0));
         dest.writeInt(itemsId);
@@ -117,13 +105,10 @@ public class DialogBuilder implements Parcelable{
                 final TextView tx1=new TextView(context, null, android.R.style.Theme_Material_Dialog_Alert);
                 tx1.setText(idOrValue(context, messageId, message));
                 tx1.setTextAppearance(context, android.R.style.TextAppearance_Material_Subhead);
-                tx1.setAutoLinkMask(Linkify.ALL);
-                //TypedArray array = context.obtainStyledAttributes(new int[]{android.R.attr.dialogPreferredPadding});
-                //int padding = array.getDimensionPixelSize(0, -1);
-                //array.recycle();
-                //array = null;
-                //tx1.setPadding(padding, 0, padding, 0);
-                builder.setView(tx1, 72, 72, 48, 0);
+                if (linkify != 0) tx1.setAutoLinkMask(linkify);
+                float scale = context.getResources().getDisplayMetrics().density;
+                System.out.println(scale);
+                builder.setView(tx1, (int) (24 * scale), (int) (18 * scale), (int) (24 * scale), 0);
                 break;
             case CUSTOM_VIEW:
                 builder.setView(viewId);
@@ -201,6 +186,7 @@ public class DialogBuilder implements Parcelable{
     @StringRes int titleId;
     String message;
     @StringRes int messageId;
+    int linkify;
     @LayoutRes int viewId;
     boolean cancelable;
 
@@ -229,6 +215,11 @@ public class DialogBuilder implements Parcelable{
     public DialogBuilder setMessage(@StringRes int messageId) {
         contentViewMode = ContentViewMode.MESSAGE;
         this.messageId = messageId;
+        return this;
+    }
+
+    public DialogBuilder setLinkify(@LinkifyValue int linkify) {
+        this.linkify = linkify;
         return this;
     }
 
