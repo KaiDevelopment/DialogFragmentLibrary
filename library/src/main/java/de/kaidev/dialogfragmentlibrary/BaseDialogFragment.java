@@ -54,6 +54,11 @@ public abstract class BaseDialogFragment extends DialogFragment {
     }
 
     @Override
+    public Dialog getDialog() {
+        return dialog;
+    }
+
+    @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         saveCallback(activity);
@@ -67,6 +72,7 @@ public abstract class BaseDialogFragment extends DialogFragment {
     @Override
     public void show(FragmentManager manager, String tag) {
         super.show(manager, tag);
+        if (getArguments() == null) setArguments(new Bundle());
         getArguments().putString("tag", tag);
     }
 
@@ -86,6 +92,13 @@ public abstract class BaseDialogFragment extends DialogFragment {
         super.onDismiss(dialog);
         if (dismissListener != null)
             dismissListener.onDismiss(getTagFromArguments(), getDialog(), getArguments().getBundle("data"));
+        dialog = null;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        dialog = null;
     }
 
     @Override

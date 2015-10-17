@@ -3,6 +3,7 @@ package de.kaidev.dialogfragmentlibrary;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.AbsListView;
@@ -16,19 +17,19 @@ import org.parceler.Parcels;
  */
 public class BuilderDialogFragment extends AlertDialogFragment implements View.OnClickListener, AdapterView.OnItemClickListener {
 
-    static public BuilderDialogFragment createDialog(DialogBuilder builder){
+    static public BuilderDialogFragment newInstance(DialogBuilder builder){
         Bundle args = new Bundle();
-        args.putParcelable(BUILDER, Parcels.wrap(builder));
+        args.putParcelable(BUILDER, builder);
 
         BuilderDialogFragment dialog = new BuilderDialogFragment();
         dialog.setArguments(args);
         return dialog;
     }
 
-    static public BuilderDialogFragment createDialog(DialogBuilder builder, Bundle data){
+    static public BuilderDialogFragment newInstance(DialogBuilder builder, Bundle data){
         Bundle args = new Bundle();
         args.putBundle("data", data);
-        args.putParcelable(BUILDER, Parcels.wrap(builder));
+        args.putParcelable(BUILDER, builder);
 
         BuilderDialogFragment dialog = new BuilderDialogFragment();
         dialog.setArguments(args);
@@ -61,7 +62,9 @@ public class BuilderDialogFragment extends AlertDialogFragment implements View.O
 
     @Override
     public AlertDialog createDialog() {
-        return ((DialogBuilder) getArguments().getParcelable("builder")).build(getContext());
+        Parcelable parcelable = getArguments().getParcelable("builder");
+        DialogBuilder builder = (DialogBuilder) parcelable;
+        return builder.build(getContext());
     }
 
     @Override

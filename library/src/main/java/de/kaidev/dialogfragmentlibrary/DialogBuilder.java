@@ -1,29 +1,112 @@
 package de.kaidev.dialogfragmentlibrary;
 
 import android.content.Context;
+import android.content.res.TypedArray;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.ArrayRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.IdRes;
+import android.support.annotation.IntDef;
+import android.support.annotation.IntRange;
+import android.support.annotation.IntegerRes;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.StringRes;
 import android.support.v7.app.AlertDialog;
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import org.apache.commons.io.Charsets;
+
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Created by Kai on 07.10.2015.
  */
-public class DialogBuilder{
+public class DialogBuilder implements Parcelable{
+
+    public DialogBuilder(){}
+
+    protected DialogBuilder(Parcel in) {
+        negativeButton = in.readString();
+        negativeButtonId = in.readInt();
+        neutralButton = in.readString();
+        neutralButtonId = in.readInt();
+        positiveButton = in.readString();
+        positiveButtonId = in.readInt();
+        iconId = in.readInt();
+        title = in.readString();
+        titleId = in.readInt();
+        message = in.readString();
+        messageId = in.readInt();
+        viewId = in.readInt();
+        cancelable = in.readByte() != 0;
+        itemsId = in.readInt();
+        checkedItems = in.createBooleanArray();
+        checkedItem = in.readInt();
+        contentViewMode = (ContentViewMode) in.readSerializable();
+        choiceMode = (ChoiceMode) in.readSerializable();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(negativeButton);
+        dest.writeInt(negativeButtonId);
+        dest.writeString(neutralButton);
+        dest.writeInt(neutralButtonId);
+        dest.writeString(positiveButton);
+        dest.writeInt(positiveButtonId);
+        dest.writeInt(iconId);
+        dest.writeString(title);
+        dest.writeInt(titleId);
+        dest.writeString(message);
+        dest.writeInt(messageId);
+        dest.writeInt(viewId);
+        dest.writeByte((byte) (cancelable ? 1 : 0));
+        dest.writeInt(itemsId);
+        dest.writeBooleanArray(checkedItems);
+        dest.writeInt(checkedItem);
+        dest.writeSerializable(contentViewMode);
+        dest.writeSerializable(choiceMode);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<DialogBuilder> CREATOR = new Creator<DialogBuilder>() {
+        @Override
+        public DialogBuilder createFromParcel(Parcel in) {
+            return new DialogBuilder(in);
+        }
+
+        @Override
+        public DialogBuilder[] newArray(int size) {
+            return new DialogBuilder[size];
+        }
+    };
 
     public AlertDialog build(Context context){
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
-        if (title != null) builder.setTitle(title);
-        if (titleId != 0) builder.setTitle(titleId);
+        builder.setTitle(idOrValue(context, titleId, title));
 
-        if (negativeButton != null) builder.setNegativeButton(negativeButton, null);
-        if (negativeButtonId != 0) builder.setNegativeButton(negativeButtonId, null);
-        if (neutralButton != null) builder.setNeutralButton(neutralButton, null);
-        if (neutralButtonId != 0) builder.setNeutralButton(neutralButtonId, null);
-        if (positiveButton != null) builder.setPositiveButton(positiveButton, null);
-        if (positiveButtonId != 0) builder.setPositiveButton(positiveButtonId, null);
+        String negativeButtonText = idOrValue(context, negativeButtonId, negativeButton);
+        if (negativeButtonText != null)
+            builder.setNegativeButton(negativeButtonText, null);
+        String positiveButtonText = idOrValue(context, positiveButtonId, positiveButton);
+        if (positiveButtonText != null)
+            builder.setPositiveButton(positiveButtonText, null);
+        String neutralButtoText = idOrValue(context, neutralButtonId, neutralButton);
+        if (neutralButtoText != null)
+            builder.setNeutralButton(neutralButtoText, null);
+
 
         builder.setIcon(iconId);
 
@@ -31,8 +114,16 @@ public class DialogBuilder{
 
         switch (contentViewMode){
             case MESSAGE:
-                if (message != null) builder.setMessage(message);
-                if (messageId != 0) builder.setMessage(messageId);
+                final TextView tx1=new TextView(context, null, android.R.style.Theme_Material_Dialog_Alert);
+                tx1.setText(idOrValue(context, messageId, message));
+                tx1.setTextAppearance(context, android.R.style.TextAppearance_Material_Subhead);
+                tx1.setAutoLinkMask(Linkify.ALL);
+                //TypedArray array = context.obtainStyledAttributes(new int[]{android.R.attr.dialogPreferredPadding});
+                //int padding = array.getDimensionPixelSize(0, -1);
+                //array.recycle();
+                //array = null;
+                //tx1.setPadding(padding, 0, padding, 0);
+                builder.setView(tx1, 72, 72, 48, 0);
                 break;
             case CUSTOM_VIEW:
                 builder.setView(viewId);
@@ -40,16 +131,13 @@ public class DialogBuilder{
             case LIST:
                 switch (choiceMode){
                     case NONE:
-                        if (items != null) builder.setItems(items, null);
-                        if (itemsId != 0) builder.setItems(itemsId, null);
+                        builder.setItems(idOrValue(context, itemsId, items), null);
                         break;
                     case SINGLE:
-                        if (items != null) builder.setSingleChoiceItems(items, checkedItem, null);
-                        if (itemsId != 0) builder.setSingleChoiceItems(itemsId, checkedItem, null);
+                        builder.setSingleChoiceItems(idOrValue(context, itemsId, items), checkedItem, null);
                         break;
                     case MULTI:
-                        if (items != null) builder.setMultiChoiceItems(items, checkedItems, null);
-                        if (itemsId != 0) builder.setMultiChoiceItems(itemsId, checkedItems, null);
+                        builder.setMultiChoiceItems(idOrValue(context, itemsId, items), checkedItems, null);
                         break;
                 }
         }
@@ -57,8 +145,16 @@ public class DialogBuilder{
         return builder.create();
     }
 
-    private String s(@StringRes int id, Context c){
-        return c.getString(id);
+    private String idOrValue(Context c, @StringRes int id, String value){
+        if (id != 0) return c.getString(id);
+        else if (value != null) return value;
+        else return null;
+    }
+
+    private CharSequence[] idOrValue(Context c, @ArrayRes int id, CharSequence[] value){
+        if (id != 0) return c.getResources().getTextArray(id);
+        else if (value != null) return value;
+        else return null;
     }
 
     String negativeButton;
@@ -83,17 +179,17 @@ public class DialogBuilder{
         return this;
     }
 
-    public DialogBuilder setNegativeButtonId(@StringRes int negativeButtonId) {
+    public DialogBuilder setNegativeButton(@StringRes int negativeButtonId) {
         this.negativeButtonId = negativeButtonId;
         return this;
     }
 
-    public DialogBuilder setNeutralButtonId(@StringRes int neutralButtonId) {
+    public DialogBuilder setNeutralButton(@StringRes int neutralButtonId) {
         this.neutralButtonId = neutralButtonId;
         return this;
     }
 
-    public DialogBuilder setPositiveButtonId(@StringRes int positiveButtonId) {
+    public DialogBuilder setPositiveButton(@StringRes int positiveButtonId) {
         this.positiveButtonId = positiveButtonId;
         return this;
     }
@@ -105,7 +201,7 @@ public class DialogBuilder{
     @StringRes int titleId;
     String message;
     @StringRes int messageId;
-    @IdRes int viewId;
+    @LayoutRes int viewId;
     boolean cancelable;
 
 
@@ -119,7 +215,7 @@ public class DialogBuilder{
         return this;
     }
 
-    public DialogBuilder setTitleId(@StringRes int titleId) {
+    public DialogBuilder setTitle(@StringRes int titleId) {
         this.titleId = titleId;
         return this;
     }
@@ -130,13 +226,13 @@ public class DialogBuilder{
         return this;
     }
 
-    public DialogBuilder setMessageId(@StringRes int messageId) {
+    public DialogBuilder setMessage(@StringRes int messageId) {
         contentViewMode = ContentViewMode.MESSAGE;
         this.messageId = messageId;
         return this;
     }
 
-    public DialogBuilder setViewId(@IdRes int viewId) {
+    public DialogBuilder setView(@LayoutRes int viewId) {
         contentViewMode = ContentViewMode.CUSTOM_VIEW;
         this.viewId = viewId;
         return this;
