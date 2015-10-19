@@ -1,6 +1,7 @@
 package de.kaidev.dialogfragmentlibrary;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.ArrayRes;
@@ -102,12 +103,15 @@ public class DialogBuilder implements Parcelable{
 
         switch (contentViewMode){
             case MESSAGE:
-                final TextView tx1=new TextView(context, null, android.R.style.Theme_Material_Dialog_Alert);
+                final TextView tx1=new TextView(context, null, R.style.AlertDialog_AppCompat);
                 tx1.setText(idOrValue(context, messageId, message));
-                tx1.setTextAppearance(context, android.R.style.TextAppearance_Material_Subhead);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    tx1.setTextAppearance(R.style.TextAppearance_AppCompat_Subhead);
+                } else {
+                    tx1.setTextAppearance(context,R.style.TextAppearance_AppCompat_Subhead);
+                }
                 if (linkify != 0) tx1.setAutoLinkMask(linkify);
                 float scale = context.getResources().getDisplayMetrics().density;
-                System.out.println(scale);
                 builder.setView(tx1, (int) (24 * scale), (int) (18 * scale), (int) (24 * scale), 0);
                 break;
             case CUSTOM_VIEW:
