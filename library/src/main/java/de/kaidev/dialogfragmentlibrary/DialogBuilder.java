@@ -9,6 +9,7 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.StringRes;
 import android.support.v7.app.AlertDialog;
+import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.widget.TextView;
 
@@ -111,6 +112,7 @@ public class DialogBuilder implements Parcelable{
                     tx1.setTextAppearance(context,R.style.TextAppearance_AppCompat_Subhead);
                 }
                 if (linkify != 0) tx1.setAutoLinkMask(linkify);
+                tx1.setMovementMethod(LinkMovementMethod.getInstance());
                 float scale = context.getResources().getDisplayMetrics().density;
                 builder.setView(tx1, (int) (24 * scale), (int) (18 * scale), (int) (24 * scale), 0);
                 break;
