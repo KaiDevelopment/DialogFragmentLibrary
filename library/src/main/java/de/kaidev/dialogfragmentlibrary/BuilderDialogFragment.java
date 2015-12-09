@@ -1,6 +1,5 @@
 package de.kaidev.dialogfragmentlibrary;
 
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -38,7 +37,7 @@ public class BuilderDialogFragment extends AlertDialogFragment implements View.O
     private ListItemListener listItemListener;
 
     @Override
-    public void saveCallback(Activity activity) {
+    public void saveCallback(Object activity) {
         super.saveCallback(activity);
         if (activity instanceof ButtonListener)
             buttonListener = (ButtonListener) activity;

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -56,7 +57,7 @@ public abstract class BaseDialogFragment extends DialogFragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        saveCallback(activity);
+        saveCallback(getTargetFragment() == null ? activity : getTargetFragment());
     }
 
     public void registerListener(AlertDialog dialog) {
@@ -71,15 +72,22 @@ public abstract class BaseDialogFragment extends DialogFragment {
         getArguments().putString("tag", tag);
     }
 
+    public void showFromFragment(FragmentManager manager, String tag, Fragment f) {
+        setTargetFragment(f, 0);
+        super.show(manager, tag);
+        if (getArguments() == null) setArguments(new Bundle());
+        getArguments().putString("tag", tag);
+    }
+
     public String getTagFromArguments(){
         return getArguments().getString("tag");
     }
 
-    public void saveCallback(Activity activity){
-        if (activity instanceof DismissListener)
-            dismissListener = (DismissListener) activity;
-        if (activity instanceof CancelListener)
-            cancelListener = (CancelListener) activity;
+    public void saveCallback(Object object) {
+        if (object instanceof DismissListener)
+            dismissListener = (DismissListener) object;
+        if (object instanceof CancelListener)
+            cancelListener = (CancelListener) object;
     }
 
     @Override
