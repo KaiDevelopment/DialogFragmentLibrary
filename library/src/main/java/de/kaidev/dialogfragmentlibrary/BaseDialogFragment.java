@@ -65,6 +65,10 @@ public abstract class BaseDialogFragment extends DialogFragment {
         dialog.setOnCancelListener(this);
     }
 
+    public void show(FragmentManager manager){
+        show(manager, "default");
+    }
+
     @Override
     public void show(FragmentManager manager, String tag) {
         super.show(manager, tag);
@@ -72,10 +76,16 @@ public abstract class BaseDialogFragment extends DialogFragment {
         getArguments().putString("tag", tag);
     }
 
+    public void show(Fragment manager){
+        show(manager, "default");
+    }
+
     public void show(Fragment f, String tag){
         setTargetFragment(f, 0);
         show(f.getFragmentManager(), tag);
     }
+
+
 
     public String getTagFromArguments(){
         return getArguments().getString("tag");
