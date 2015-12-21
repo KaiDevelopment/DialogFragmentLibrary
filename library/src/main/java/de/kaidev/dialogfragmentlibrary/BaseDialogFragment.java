@@ -72,11 +72,9 @@ public abstract class BaseDialogFragment extends DialogFragment {
         getArguments().putString("tag", tag);
     }
 
-    public void showFromFragment(FragmentManager manager, String tag, Fragment f) {
+    public void show(Fragment f, String tag){
         setTargetFragment(f, 0);
-        super.show(manager, tag);
-        if (getArguments() == null) setArguments(new Bundle());
-        getArguments().putString("tag", tag);
+        show(f.getFragmentManager(), tag);
     }
 
     public String getTagFromArguments(){
