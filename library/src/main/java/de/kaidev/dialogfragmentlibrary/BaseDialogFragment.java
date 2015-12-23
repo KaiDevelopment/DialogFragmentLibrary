@@ -85,8 +85,6 @@ public abstract class BaseDialogFragment extends DialogFragment {
         show(f.getFragmentManager(), tag);
     }
 
-
-
     public String getTagFromArguments(){
         return getArguments().getString("tag");
     }
