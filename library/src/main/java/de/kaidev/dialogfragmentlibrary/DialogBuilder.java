@@ -10,7 +10,6 @@ import android.support.annotation.LayoutRes;
 import android.support.annotation.StringRes;
 import android.support.v7.app.AlertDialog;
 import android.text.method.LinkMovementMethod;
-import android.text.util.Linkify;
 import android.widget.TextView;
 
 /**
@@ -18,8 +17,48 @@ import android.widget.TextView;
  */
 public class DialogBuilder implements Parcelable{
 
-    public DialogBuilder(){}
+    public static final Creator<DialogBuilder> CREATOR = new Creator<DialogBuilder>() {
+        @Override
+        public DialogBuilder createFromParcel(Parcel in) {
+            return new DialogBuilder(in);
+        }
 
+        @Override
+        public DialogBuilder[] newArray(int size) {
+            return new DialogBuilder[size];
+        }
+    };
+    String negativeButton;
+    @StringRes
+    int negativeButtonId;
+    String neutralButton;
+    @StringRes
+    int neutralButtonId;
+    String positiveButton;
+    @StringRes
+    int positiveButtonId;
+    ContentViewMode contentViewMode;
+    @DrawableRes
+    int iconId;
+    String title;
+    @StringRes
+    int titleId;
+    String message;
+    @StringRes
+    int messageId;
+    int linkify;
+    @LayoutRes
+    int viewId;
+    boolean cancelable;
+    CharSequence[] items;
+    @ArrayRes
+    int itemsId;
+    boolean[] checkedItems;
+    int checkedItem;
+    ChoiceMode choiceMode;
+
+    public DialogBuilder() {
+    }
     protected DialogBuilder(Parcel in) {
         negativeButton = in.readString();
         negativeButtonId = in.readInt();
@@ -69,18 +108,6 @@ public class DialogBuilder implements Parcelable{
     public int describeContents() {
         return 0;
     }
-
-    public static final Creator<DialogBuilder> CREATOR = new Creator<DialogBuilder>() {
-        @Override
-        public DialogBuilder createFromParcel(Parcel in) {
-            return new DialogBuilder(in);
-        }
-
-        @Override
-        public DialogBuilder[] newArray(int size) {
-            return new DialogBuilder[size];
-        }
-    };
 
     public AlertDialog build(Context context){
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -148,13 +175,6 @@ public class DialogBuilder implements Parcelable{
         else return null;
     }
 
-    String negativeButton;
-    @StringRes int negativeButtonId;
-    String neutralButton;
-    @StringRes int neutralButtonId;
-    String positiveButton;
-    @StringRes int positiveButtonId;
-
     public DialogBuilder setNegativeButton(String negativeButton) {
         this.negativeButton = negativeButton;
         return this;
@@ -184,18 +204,6 @@ public class DialogBuilder implements Parcelable{
         this.positiveButtonId = positiveButtonId;
         return this;
     }
-
-    ContentViewMode contentViewMode;
-
-    @DrawableRes int iconId;
-    String title;
-    @StringRes int titleId;
-    String message;
-    @StringRes int messageId;
-    int linkify;
-    @LayoutRes int viewId;
-    boolean cancelable;
-
 
     public DialogBuilder setIcon(@DrawableRes int icon){
         this.iconId = icon;
@@ -239,13 +247,6 @@ public class DialogBuilder implements Parcelable{
         this.cancelable = cancelable;
         return this;
     }
-
-    CharSequence[] items;
-    @ArrayRes int itemsId;
-    boolean[] checkedItems;
-    int checkedItem;
-    ChoiceMode choiceMode;
-
 
     public DialogBuilder setItems(CharSequence[] items){
         choiceMode = ChoiceMode.NONE;

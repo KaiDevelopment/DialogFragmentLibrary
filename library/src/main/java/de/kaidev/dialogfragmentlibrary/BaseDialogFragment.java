@@ -19,15 +19,12 @@ import android.view.ViewGroup;
  */
 public abstract class BaseDialogFragment extends DialogFragment {
     public static final String BUILDER = "builder";
-
-    private CancelListener cancelListener;
-    private DismissListener dismissListener;
-
     Dialog dialog;
-
     boolean positive = true;
     boolean neutral = true;
     boolean negative = true;
+    private CancelListener cancelListener;
+    private DismissListener dismissListener;
 
     @Nullable
     @Override
@@ -40,11 +37,14 @@ public abstract class BaseDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         System.out.println("BaseDialogFragment.onCreateDialog");
         dialog = createDialog();
-        dialog.setOnShowListener(dialog1 -> {
-            registerListener((AlertDialog) dialog1);
-            ((AlertDialog) dialog1).getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(positive);
-            ((AlertDialog) dialog1).getButton(DialogInterface.BUTTON_NEUTRAL).setEnabled(neutral);
-            ((AlertDialog) dialog1).getButton(DialogInterface.BUTTON_NEGATIVE).setEnabled(negative);
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialog1) {
+                BaseDialogFragment.this.registerListener((AlertDialog) dialog1);
+                ((AlertDialog) dialog1).getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(positive);
+                ((AlertDialog) dialog1).getButton(DialogInterface.BUTTON_NEUTRAL).setEnabled(neutral);
+                ((AlertDialog) dialog1).getButton(DialogInterface.BUTTON_NEGATIVE).setEnabled(negative);
+            }
         });
         return dialog;
     }
